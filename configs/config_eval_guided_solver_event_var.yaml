@@ -1,0 +1,15 @@
+# @package _global_
+
+defaults:
+  - config_eval_guided_solver
+  - _self_
+
+feedback_refinement:
+  enabled: True
+  state_type: event_var
+  event_state_features: enhanced
+  num_rounds: 2
+  state_momentum: 0.5
+  rollout_budget_type: conflicts
+  rollout_conflicts: 500
+  warmup_cpu_lim: 1

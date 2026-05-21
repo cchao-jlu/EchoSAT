@@ -1,0 +1,12 @@
+# @package _global_
+
+defaults:
+  - config_eval_guided_solver
+  - _self_
+
+feedback_refinement:
+  enabled: True
+  state_type: global
+  num_rounds: 1
+  state_momentum: 0.0
+  warmup_cpu_lim: 1

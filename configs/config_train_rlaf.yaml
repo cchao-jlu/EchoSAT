@@ -1,0 +1,103 @@
+# @package _global_
+
+defaults:
+  - _self_
+
+method: grpo
+
+model_name: GNN_Glucose_3SAT
+model_dir: runs/${model_name}
+
+from_checkpoint: null
+
+val_interval: 5
+skip_initial_val: False
+ckpt_interval: null   # "best.pt" is always saved
+last_ckpt_interval: 1
+
+training:
+  iterations: 2000
+  cnf_per_iter: 100
+  steps_per_iter: 50
+  clip_ratio: 0.2
+  beta: 1.0
+  kl_penalty: 0.1
+  target_stat: decisions
+  num_samples: 40
+  use_amp: True
+  # "none": original RLAF. "random_warmup": random solver warmup states.
+  # "model_warmup": on-policy warmup state. "mixed_warmup": random/model mix.
+  feedback_input_mode: none
+  # "global": graph-level 6-dim feedback. "event_var": variable-level solver event feedback.
+  feedback_state_type: global
+  # "legacy": 5 cumulative log features. "enhanced": cumulative/delta/rate/rank features.
+  feedback_event_state_features: legacy
+  feedback_state_momentum: 0.0
+  # Set to "model_warmup" to validate with the test-time protocol:
+  # GNN -> solver feedback -> GNN.
+  feedback_val_mode: none
+  feedback_model_warmup_prob: 0.3
+  # "cpu_time" uses feedback_warmup_cpu_lim. "conflicts" also passes conf-lim to weighted Glucose.
+  feedback_warmup_budget_type: cpu_time
+  feedback_warmup_cpu_lim: 1
+  feedback_warmup_conflicts: 500
+  feedback_warmup_num_samples: 1
+  feedback_random_weight: 1.0
+  composite_cpu_weight: 1.0
+  composite_conflicts_weight: 0.2
+  composite_decisions_weight: 0.0
+
+dataset:
+  train_path: "data/training/3sat/*/*.cnf"
+  val_path: "data/validation/3sat/*/*.cnf"
+  lazy: False
+  lazy_val: False
+
+solver:
+  solver: glucose
+  num_workers: 8
+  params: # CLI parameters for glucose (not used when solver=march)
+    cpu-lim: 60
+    rnd-freq: 0.0
+    K: 0.1
+
+model:
+  channels: 256
+  num_layers: 10
+  global_state_dim: 0
+  var_state_dim: 0
+  aggr: [mean]
+  feature_encoder: mlp
+  dropout: 0.0
+  feature_set: rich
+  separate_encoders: True
+  learnable_sigma: True
+  event_adapter:
+    enabled: False
+    hidden_dim: 128
+
+# this is the sigma parameter for the log-normal weight distributions
+scale_sigma: 0.1
+
+loader:
+  batch_size: 20
+  num_workers: 0
+
+optim:
+  lr: 5e-5
+  weight_decay: 0.0
+
+wandb:
+  project: RLAF
+  name: ${model_name}
+  mode: online
+
+
+# path to original working directory
+work_dir: ${hydra:runtime.cwd}
+
+# path to folder with data
+data_dir: data
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 0

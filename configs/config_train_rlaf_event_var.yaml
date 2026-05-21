@@ -1,0 +1,26 @@
+# @package _global_
+
+defaults:
+  - config_train_rlaf_balanced
+  - _self_
+
+model_name: GNN_Glucose_3SAT_EventVarFeedback
+
+training:
+  feedback_state_type: event_var
+  feedback_event_state_features: enhanced
+  feedback_state_momentum: 0.5
+  feedback_input_mode: mixed_warmup
+  feedback_val_mode: model_warmup
+  feedback_warmup_budget_type: conflicts
+  feedback_warmup_conflicts: 500
+
+model:
+  global_state_dim: 0
+  var_state_dim: 20
+  event_adapter:
+    enabled: True
+    hidden_dim: 128
+
+dataset:
+  lazy: True

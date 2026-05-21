@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - config_train_rlaf
+  - _self_
+
+model_name: GNN_Glucose_3SAT_FeedbackImprover_Balanced
+
+training:
+  feedback_input_mode: mixed_warmup
+  feedback_state_type: global
+  feedback_model_warmup_prob: 0.5
+  feedback_val_mode: model_warmup
+  feedback_warmup_cpu_lim: 2
+  target_stat: composite
+  composite_cpu_weight: 1.0
+  composite_conflicts_weight: 0.3
+  composite_decisions_weight: 0.05
+
+model:
+  global_state_dim: 6
+  var_state_dim: 0

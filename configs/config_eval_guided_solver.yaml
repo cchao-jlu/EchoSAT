@@ -1,0 +1,45 @@
+# @package _global_
+
+defaults:
+  - _self_
+
+checkpoint: runs/GNN/best.pt
+
+save_file: solver_stats.csv
+
+dataset:
+  eval_path: "data/test/3sat/350/*.cnf"
+  lazy: False
+
+solver:
+  solver: null
+  num_workers: 8
+  params:
+    cpu-lim: 36000
+    rnd-freq: 0.0
+    K: 0.1
+
+loader:
+  batch_size: 200
+  num_neighbors: 128
+  num_workers: 0
+
+feedback_refinement:
+  enabled: False
+  # "global": graph-level state. "event_var": variable-level solver event state.
+  state_type: global
+  # "legacy": 5 cumulative log features. "enhanced": cumulative/delta/rate/rank features.
+  event_state_features: legacy
+  num_rounds: 1
+  state_momentum: 0.0
+  # "cpu_time" uses warmup_cpu_lim. "conflicts" also passes conf-lim to weighted Glucose.
+  rollout_budget_type: cpu_time
+  rollout_conflicts: 500
+  warmup_cpu_lim: 1
+
+is_supervised: False
+# scale needed for supervised models
+pred_scale: 1.0
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 1729
